@@ -1,23 +1,31 @@
-import logo from './logo.svg';
 import './App.css';
+import WeekContainer from './components/WeekContainer'
+import CitySelector from './components/CitySelector'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {api} from './components/Keys'
+import UseFetch from './components/Hooks/UseFetch'
+import {Container} from 'react-bootstrap';
+import WeatherList from './components/WeatherList'
 
 function App() {
+
+  const {data, error, isLoading, setUrl} = UseFetch();
+
+  const getContent = () => {
+    console.log(data + " DATA")
+    if(error) return <h2>Error when fetching: {error}</h2>
+    if(!data && isLoading) return <h2>LOADING...</h2>
+    if(!data) return null;
+    return <WeatherList weathers={data.list} />
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+     <Container className="App">
+        <CitySelector onSearch={(city) => setUrl(`${api.base}forecast?q=${city}&units=metric&APPID=${api.key}`)} />
+        {/* conditionally render  */}
+      {getContent()}
+    </Container>
     </div>
   );
 }
